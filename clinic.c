@@ -19,15 +19,16 @@ typedef struct {
     char clientExists;
 } typeClient;
 
-void addClient(FILE *clientData) {
+void addClient() {
     typeClient client;
     char answer;
 
-    // FILE *clientData;
+	FILE *clientData;
 
     if (!(clientData = fopen("clientFile.dat", "a+b"))) {
         printf("Houve um erro na abertura do arquivo.\n");
-        return 1;
+
+        return;
     }
 
     do {
@@ -62,19 +63,18 @@ void addClient(FILE *clientData) {
     fclose(clientData);
 }
 
-void updateClient(FILE *clientData) {
+void updateClient() {
     typeClient client;
     char searchName[30], answer;
     int clientFlag = 0;
 
-    // FILE *clientData
+	FILE *clientData;
 
-	/*
-    if (!clientData = fopen("clientFile.dat", "rb")) {
+    if (! (clientData = fopen("clientFile.dat", "rb"))) {
         printf("Houve um erro na abertura do arquivo.");
-        return 1;
-    }
-	*/
+
+		return;
+	}
 
     printf("\nCONSULTA DE PACIENTES PARA ATUALIZACAO\n");
     printf("Digite o nome do cliente a ser buscado: ");
@@ -113,15 +113,14 @@ void updateClient(FILE *clientData) {
             fseek(clientData, -sizeof(typeClient), SEEK_CUR);
             fwrite(&client, sizeof(typeClient), 1, clientData);
             clientFlag = 1;
-            break;
+
+			break;
         }
     }
 
     if (!clientFlag) {
         printf("\nO paciente buscado nao foi encontrado no banco de dados.\n");
     }
-
-    // fclose(productsData);
 }
 
 int main()
@@ -147,8 +146,10 @@ int main()
 	switch(option)
 	{
 		case 1:
+			addClient();
 			break;
 		case 2:
+			updateClient();
 			break;
 		case 3:
 			break;
