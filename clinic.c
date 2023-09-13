@@ -20,6 +20,13 @@ typedef struct {
     char clientExists;
 } typeClient;
 
+typedef struct {
+    int clientCode;
+    char date[11];
+    char time[6];
+    char isScheduled;
+} typeAppointment;
+
 void addClient() {
     typeClient client;
     char answer;
@@ -80,7 +87,7 @@ void updateClient() {
 
     FILE *clientData;
 
-    if (!(clientData = fopen("clientes.dat", "a+b"))) {
+    if (!(clientData = fopen("clientFile.dat", "rb"))) {
         printf("Houve um erro na abertura do arquivo.");
 
         return;
@@ -208,6 +215,54 @@ void end()
 	printf("Obrigado por utilizar nosso programa!\n");
 }
 
+void addAppointment() {
+    typeAppointment appointment;
+    typeAppointment existingAppointment;
+    char answer;
+
+    FILE *appointmentData;
+
+    if (!(appointmentData = fopen("appointments.dat", "a+b"))) {
+        printf("Houve um erro ao tentar abrir o arquivo de consultas.\n");
+        return;
+    }
+
+    do {
+        int clientCodeExists = 0;
+        appointment.isScheduled = 1;
+
+        printf("Codigo do cliente: ");
+        scanf("%d", &appointment.clientCode);
+        fflush(stdin);
+
+        fseek(appointmentData, 0, SEEK_SET);
+        while (fread(&existingAppointment, sizeof(typeAppointment), 1, appointmentData) == 1) {
+            if (existingAppointment.clientCode == appointment.clientCode) {
+                printf("Esse cliente ja possui uma consulta marcada.\n");
+                clientCodeExists = 1;
+                break;
+            }
+        }
+
+        if (!clientCodeExists) {
+            printf("Data da consulta (DD/MM/YYYY): ");
+            scanf("%s", appointment.date);
+
+            printf("Hora da consulta (HH:MM): ");
+            scanf("%s", appointment.time);
+
+            fwrite(&appointment, sizeof(typeAppointment), 1, appointmentData);
+        }
+
+        printf("\nDeseja adicionar outra consulta (S/N)? ");
+        do {
+            answer = toupper(getch());
+        } while (answer != 'S' && answer != 'N');
+    } while (answer == 'S');
+
+    fclose(appointmentData);
+}
+
 int main()
 {
 	int option = 0;
@@ -237,6 +292,7 @@ int main()
 			updateClient();
 			break;
 		case 3:
+            addAppointment();
 			break;
 		case 4:
 			removeAppointment();
