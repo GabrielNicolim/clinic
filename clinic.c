@@ -1,6 +1,11 @@
 #include <stdio.h>
 #include <ctype.h>
 
+#ifdef _WIN32
+#include <conio.h>
+#include <windows.h>
+#endif
+
 typedef struct {
     char city[20], state[2], street[30];
     int houseNumber;
@@ -18,7 +23,7 @@ void addClient(FILE *clientData) {
     typeClient client;
     char answer;
 
-    FILE *clientData;
+    // FILE *clientData;
 
     if (!(clientData = fopen("clientFile.dat", "a+b"))) {
         printf("Houve um erro na abertura do arquivo.\n");
@@ -62,12 +67,14 @@ void updateClient(FILE *clientData) {
     char searchName[30], answer;
     int clientFlag = 0;
 
-    FILE *clientData
+    // FILE *clientData
 
+	/*
     if (!clientData = fopen("clientFile.dat", "rb")) {
         printf("Houve um erro na abertura do arquivo.");
         return 1;
     }
+	*/
 
     printf("\nCONSULTA DE PACIENTES PARA ATUALIZACAO\n");
     printf("Digite o nome do cliente a ser buscado: ");
@@ -113,6 +120,48 @@ void updateClient(FILE *clientData) {
     if (!clientFlag) {
         printf("\nO paciente buscado nao foi encontrado no banco de dados.\n");
     }
-    fclose(productsData);
+
+    // fclose(productsData);
+}
+
+int main()
+{
+	int option = 0;
+
+	do {
+		printf("1 - Cadastrar cliente\n");
+		printf("2 - Alterar dados de cliente\n");
+		printf("3 - Marcar consulta\n");
+		printf("4 - Desmarcar a consulta\n");
+		printf("5 - Escrever mapa de horários para um determinado dia\n");
+		printf("6 - Obter consultas\n");
+		printf("7 - Consultar maiores de 50\n");
+		printf("8 - Fim\n\n");
+		
+		printf("Escolhar uma opcao (1 - 8): ");
+		scanf("%d", &option);
+
+		system("cls");
+	} while(option < 1 || option > 8);
+	
+	switch(option)
+	{
+		case 1:
+			break;
+		case 2:
+			break;
+		case 3:
+			break;
+		case 4:
+			break;
+		case 5:
+			break;
+		case 6:
+			break;
+		case 7:
+			break;
+		case 8:
+			break;
+	}
 }
 
