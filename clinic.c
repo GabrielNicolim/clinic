@@ -80,7 +80,7 @@ void updateClient() {
 
     FILE *clientData;
 
-    if (!(clientData = fopen("clientFile.dat", "a+b"))) {
+    if (!(clientData = fopen("clientes.dat", "a+b"))) {
         printf("Houve um erro na abertura do arquivo.");
 
         return;
@@ -150,7 +150,7 @@ void removeAppointment() {
 
     FILE *clientData;
 
-    if (!(clientData = fopen("clientFile.dat", "a+b"))) {
+    if (!(clientData = fopen("clientes.dat", "a+b"))) {
         printf("Houve um erro na abertura do arquivo.");
 
         return;
