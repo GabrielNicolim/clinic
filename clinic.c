@@ -17,6 +17,7 @@ typedef struct {
     char clientName[20];
     int clientAge;
     typeAddress clientAddress;
+    int clientPhoneNumber;
     char clientExists;
 } typeClient;
 
@@ -48,6 +49,10 @@ void addClient() {
         scanf("%d", &client.clientAge);
         fflush(stdin);
 
+        printf("Telefone: ");
+        scanf("%d", &client.clientPhoneNumber);
+        fflush(stdin);
+
         printf("Rua: ");
         gets(client.clientAddress.street);
 
@@ -61,10 +66,9 @@ void addClient() {
         printf("Estado: ");
         gets(client.clientAddress.state);
 
-
         fwrite(&client, sizeof(typeClient), 1, clientData);
 
-        printf("\n Deseja adicionar outro cliente (S/N)? ");
+        printf("\nDeseja adicionar outro paciente (S/N)? ");
         do {
             answer = toupper(getch());
         } while (answer != 'S' && answer != 'N');
@@ -75,8 +79,8 @@ void addClient() {
 
 void updateClient() {
     typeClient client;
-    char searchName[30], answer;
-    int clientFlag = 0;
+    char answer;
+    int clientFlag = 0, searchCode;
 
     FILE *clientData;
 
@@ -89,19 +93,26 @@ void updateClient() {
     do {
 
         printf("\nCONSULTA DE PACIENTES PARA ATUALIZACAO\n");
-        printf("Digite o nome do cliente a ser buscado: ");
-        scanf("%s", searchName);
+        printf("Digite o codigo do paciente a ser buscado: ");
+        scanf("%d", &searchCode);
 
         while (fread(&client, sizeof(typeClient), 1, clientData)) {
-            if (client.clientExists && strcmp(client.clientName, searchName) == 0) {
+            if (client.clientExists && searchCode) {
 
                 printf("\nDADOS ATUAIS DO PACIENTE BUSCADO\n");
 
                 printf("Codigo: %d\n", client.clientCode);
                 printf("Nome: %s\n", client.clientName);
-                printf("Idade: %d", client.clientAge);
-                printf("Endereco: %s, %d (%s-%s)", client.clientAddress.street, client.clientAddress.houseNumber,
-                       client.clientAddress.city, client.clientAddress.state);
+                printf("Idade: %d\n", client.clientAge);
+                printf("Telefone: %d\n", client.clientPhoneNumber);
+
+                printf("Endereco:\n");
+
+                printf("Rua: %s", client.clientAddress.street);
+                printf("Numero da casa: %d", client.clientAddress.houseNumber);
+                printf("Cidade: %s", client.clientAddress.city);
+
+                printf("Estado: %s", client.clientAddress.state);
 
                 printf("\nATUALIZACAO DO CADASTRO DO PACIENTE\n");
 
@@ -116,17 +127,28 @@ void updateClient() {
                 scanf("%d", &client.clientAge);
                 fflush(stdin);
 
-                printf("Endereco: ");
-                gets(client.clientAddress.street);
-                scanf("%d", &client.clientAddress.houseNumber);
-                gets(client.clientAddress.city);
-                gets(client.clientAddress.state);
+                printf("Telefone: ");
+                scanf("%d", &client.clientPhoneNumber);
+                fflush(stdin);
 
+                printf("Endereco:\n\n");
+
+                printf("Rua: ");
+                gets(client.clientAddress.street);
+
+                printf("Numero da casa: ");
+                scanf("%d", &client.clientAddress.houseNumber);
+                fflush(stdin);
+
+                printf("Cidade: ");
+                gets(client.clientAddress.city);
+
+                printf("Estado: ");
+                gets(client.clientAddress.state);
 
                 fseek(clientData, -sizeof(typeClient), SEEK_CUR);
                 fwrite(&client, sizeof(typeClient), 1, clientData);
                 clientFlag = 1;
-
                 break;
             }
         }
@@ -135,7 +157,7 @@ void updateClient() {
             printf("\nO paciente buscado nao foi encontrado no banco de dados.\n");
         }
 
-        printf("\n Deseja adicionar outro cliente (S/N)? ");
+        printf("\n Deseja adicionar outro paciente (S/N)? ");
         do {
             answer = toupper(getch());
         } while (answer != 'S' && answer != 'N');
