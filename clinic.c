@@ -34,6 +34,8 @@ void addClient() {
     }
 
     do {
+    	printf("\nCADASTRO DE CLIENTE\n");
+
         client.clientExists = 1;
 
         printf("Codigo: ");
@@ -140,44 +142,51 @@ void updateClient() {
     } while (answer == 'S');
 }
 
-int main() {
-    int option = 0;
-
-    do {
-        printf("1 - Cadastrar cliente\n");
-        printf("2 - Alterar dados de cliente\n");
-        printf("3 - Marcar consulta\n");
-        printf("4 - Desmarcar a consulta\n");
-        printf("5 - Escrever mapa de horï¿½rios para um determinado dia\n");
-        printf("6 - Obter consultas\n");
-        printf("7 - Consultar maiores de 50\n");
-        printf("8 - Fim\n\n");
-
-        printf("Escolhar uma opcao (1 - 8): ");
-        scanf("%d", &option);
-
-        system("cls");
-    } while (option < 1 || option > 8);
-
-    switch (option) {
-        case 1:
-            addClient();
-            break;
-        case 2:
-            updateClient();
-            break;
-        case 3:
-            break;
-        case 4:
-            break;
-        case 5:
-            break;
-        case 6:
-            break;
-        case 7:
-            break;
-        case 8:
-            break;
-    }
+void end()
+{
+	printf("Obrigado por utilizar nosso programa!\n");
 }
 
+int main()
+{
+	int option = 0;
+
+	do {
+		printf("1 - Cadastrar cliente\n");
+		printf("2 - Alterar dados de cliente\n");
+		printf("3 - Marcar consulta\n");
+		printf("4 - Desmarcar a consulta\n");
+		printf("5 - Escrever mapa de horários para um determinado dia\n");
+		printf("6 - Obter consultas\n");
+		printf("7 - Consultar maiores de 50\n");
+		printf("8 - Fim\n\n");
+		
+		printf("Escolhar uma opcao (1 - 8): ");
+		scanf("%d", &option);
+
+		system("cls");
+	} while(option < 1 || option > 8);
+	
+	switch(option)
+	{
+		case 1:
+			addClient();
+			break;
+		case 2:
+			updateClient();
+			break;
+		case 3:
+			break;
+		case 4:
+			break;
+		case 5:
+			break;
+		case 6:
+			break;
+		case 7:
+			break;
+		case 8:
+			end();
+			break;
+	}
+}
