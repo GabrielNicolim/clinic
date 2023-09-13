@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include <ctype.h>
 
 #ifdef _WIN32
 
@@ -86,6 +85,7 @@ void updateClient() {
 
         return;
     }
+
     do {
 
         printf("\nCONSULTA DE PACIENTES PARA ATUALIZACAO\n");
@@ -142,6 +142,67 @@ void updateClient() {
     } while (answer == 'S');
 }
 
+
+void removeAppointment() {
+    typeClient client;
+    char answer;
+	int searchCode, clientFlag, appointmentFlag;
+
+    FILE *clientData;
+
+    if (!(clientData = fopen("clientFile.dat", "a+b"))) {
+        printf("Houve um erro na abertura do arquivo.");
+
+        return;
+    }
+
+    do {
+        printf("\nDESMARCAR CONSULTA\n");
+        printf("Digite o codigo do cliente a ser buscado: ");
+        scanf("%d", searchCode);
+
+        while (fread(&client, sizeof(typeClient), 1, clientData)) {
+            if (client.clientExists && client.clientCode == searchCode) {
+            	clientFlag = 1;
+
+				typeAppointment appointment;
+
+				FILE *appointmentData;
+					
+			    if (!(appointmentData = fopen("consultas.dat", "a+b"))) {
+			        printf("Houve um erro na abertura do arquivo.");
+			
+			        return;
+			    }
+
+				while (fread(&appointment, sizeof(typeAppointment), 1, appointmentData)) {
+					if (appointment.isScheduled && appointment.clientCode == searchCode) {
+						appointmentFlag = 1;
+						
+						// Alterar campo isScheduled
+					}
+
+                	break;
+				}
+            }
+        }
+
+        if (! clientFlag) {
+            printf("\nO paciente buscado nao foi encontrado no banco de dados.\n");
+        }
+
+		if (! appointmentFlag) {
+            printf("\nO paciente nao tem consultas ativas.\n");
+        }
+
+        printf("\n Deseja remover outra consulta (S/N)? ");
+
+		do {
+            answer = toupper(getch());
+        } while (answer != 'S' && answer != 'N');
+    } while (answer == 'S');
+}
+
 void end()
 {
 	printf("Obrigado por utilizar nosso programa!\n");
@@ -156,7 +217,7 @@ int main()
 		printf("2 - Alterar dados de cliente\n");
 		printf("3 - Marcar consulta\n");
 		printf("4 - Desmarcar a consulta\n");
-		printf("5 - Escrever mapa de horários para um determinado dia\n");
+		printf("5 - Escrever mapa de horarios para um determinado dia\n");
 		printf("6 - Obter consultas\n");
 		printf("7 - Consultar maiores de 50\n");
 		printf("8 - Fim\n\n");
@@ -178,6 +239,7 @@ int main()
 		case 3:
 			break;
 		case 4:
+			removeAppointment();
 			break;
 		case 5:
 			break;
