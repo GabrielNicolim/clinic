@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include <ctype.h>
 
 #ifdef _WIN32
 
@@ -35,6 +34,8 @@ void addClient() {
     }
 
     do {
+    	printf("\nCADASTRO DE CLIENTE\n");
+
         client.clientExists = 1;
 
         printf("Codigo: ");
@@ -88,6 +89,7 @@ void updateClient() {
 
         return;
     }
+
     do {
 
         printf("\nCONSULTA DE PACIENTES PARA ATUALIZACAO\n");
@@ -162,44 +164,113 @@ void updateClient() {
     } while (answer == 'S');
 }
 
-int main() {
-    int option = 0;
+
+void removeAppointment() {
+    typeClient client;
+    char answer;
+	int searchCode, clientFlag, appointmentFlag;
+
+    FILE *clientData;
+
+    if (!(clientData = fopen("clientFile.dat", "a+b"))) {
+        printf("Houve um erro na abertura do arquivo.");
+
+        return;
+    }
 
     do {
-        printf("1 - Cadastrar paciente\n");
-        printf("2 - Alterar dados de paciente\n");
-        printf("3 - Marcar consulta\n");
-        printf("4 - Desmarcar a consulta\n");
-        printf("5 - Escrever mapa de horarios para um determinado dia\n");
-        printf("6 - Obter consultas\n");
-        printf("7 - Consultar maiores de 50\n");
-        printf("8 - Fim\n\n");
+        printf("\nDESMARCAR CONSULTA\n");
+        printf("Digite o codigo do cliente a ser buscado: ");
+        scanf("%d", searchCode);
 
-        printf("Escolhar uma opcao (1 - 8): ");
-        scanf("%d", &option);
+        while (fread(&client, sizeof(typeClient), 1, clientData)) {
+            if (client.clientExists && client.clientCode == searchCode) {
+            	clientFlag = 1;
 
-        system("cls");
-    } while (option < 1 || option > 8);
+				typeAppointment appointment;
 
-    switch (option) {
-        case 1:
-            addClient();
-            break;
-        case 2:
-            updateClient();
-            break;
-        case 3:
-            break;
-        case 4:
-            break;
-        case 5:
-            break;
-        case 6:
-            break;
-        case 7:
-            break;
-        case 8:
-            break;
-    }
+				FILE *appointmentData;
+					
+			    if (!(appointmentData = fopen("consultas.dat", "a+b"))) {
+			        printf("Houve um erro na abertura do arquivo.");
+			
+			        return;
+			    }
+
+				while (fread(&appointment, sizeof(typeAppointment), 1, appointmentData)) {
+					if (appointment.isScheduled && appointment.clientCode == searchCode) {
+						appointmentFlag = 1;
+						
+						// Alterar campo isScheduled
+					}
+
+                	break;
+				}
+            }
+        }
+
+        if (! clientFlag) {
+            printf("\nO paciente buscado nao foi encontrado no banco de dados.\n");
+        }
+
+		if (! appointmentFlag) {
+            printf("\nO paciente nao tem consultas ativas.\n");
+        }
+
+        printf("\n Deseja remover outra consulta (S/N)? ");
+
+		do {
+            answer = toupper(getch());
+        } while (answer != 'S' && answer != 'N');
+    } while (answer == 'S');
 }
 
+void end()
+{
+	printf("Obrigado por utilizar nosso programa!\n");
+}
+
+int main()
+{
+	int option = 0;
+
+	do {
+		printf("1 - Cadastrar cliente\n");
+		printf("2 - Alterar dados de cliente\n");
+		printf("3 - Marcar consulta\n");
+		printf("4 - Desmarcar a consulta\n");
+		printf("5 - Escrever mapa de horarios para um determinado dia\n");
+		printf("6 - Obter consultas\n");
+		printf("7 - Consultar maiores de 50\n");
+		printf("8 - Fim\n\n");
+		
+		printf("Escolhar uma opcao (1 - 8): ");
+		scanf("%d", &option);
+
+		system("cls");
+	} while(option < 1 || option > 8);
+	
+	switch(option)
+	{
+		case 1:
+			addClient();
+			break;
+		case 2:
+			updateClient();
+			break;
+		case 3:
+			break;
+		case 4:
+			removeAppointment();
+			break;
+		case 5:
+			break;
+		case 6:
+			break;
+		case 7:
+			break;
+		case 8:
+			end();
+			break;
+	}
+}
