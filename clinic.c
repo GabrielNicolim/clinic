@@ -27,6 +27,13 @@ typedef struct {
     char isScheduled;
 } typeAppointment;
 
+void addClient();
+void updateClient();
+void removeAppointment();
+void addAppointment();
+void mapAppointments();
+void end();
+
 void addClient() {
     typeClient client;
     char answer;
@@ -40,7 +47,7 @@ void addClient() {
     }
 
     do {
-    	printf("\nCADASTRO DE CLIENTE\n");
+        printf("\nCADASTRO DE CLIENTE\n");
 
         client.clientExists = 1;
 
@@ -153,7 +160,7 @@ void updateClient() {
 void removeAppointment() {
     typeClient client;
     char answer;
-	int searchCode, clientFlag, appointmentFlag;
+    int searchCode, clientFlag, appointmentFlag;
 
     FILE *clientData;
 
@@ -170,49 +177,48 @@ void removeAppointment() {
 
         while (fread(&client, sizeof(typeClient), 1, clientData)) {
             if (client.clientExists && client.clientCode == searchCode) {
-            	clientFlag = 1;
+                clientFlag = 1;
 
-				typeAppointment appointment;
+                typeAppointment appointment;
 
-				FILE *appointmentData;
-					
-			    if (!(appointmentData = fopen("consultas.dat", "a+b"))) {
-			        printf("Houve um erro na abertura do arquivo.");
-			
-			        return;
-			    }
+                FILE *appointmentData;
 
-				while (fread(&appointment, sizeof(typeAppointment), 1, appointmentData)) {
-					if (appointment.isScheduled && appointment.clientCode == searchCode) {
-						appointmentFlag = 1;
-						
-						// Alterar campo isScheduled
-					}
+                if (!(appointmentData = fopen("consultas.dat", "a+b"))) {
+                    printf("Houve um erro na abertura do arquivo.");
 
-                	break;
-				}
+                    return;
+                }
+
+                while (fread(&appointment, sizeof(typeAppointment), 1, appointmentData)) {
+                    if (appointment.isScheduled && appointment.clientCode == searchCode) {
+                        appointmentFlag = 1;
+
+                        // Alterar campo isScheduled
+                    }
+
+                    break;
+                }
             }
         }
 
-        if (! clientFlag) {
+        if (!clientFlag) {
             printf("\nO paciente buscado nao foi encontrado no banco de dados.\n");
         }
 
-		if (! appointmentFlag) {
+        if (!appointmentFlag) {
             printf("\nO paciente nao tem consultas ativas.\n");
         }
 
         printf("\n Deseja remover outra consulta (S/N)? ");
 
-		do {
+        do {
             answer = toupper(getch());
         } while (answer != 'S' && answer != 'N');
     } while (answer == 'S');
 }
 
-void end()
-{
-	printf("Obrigado por utilizar nosso programa!\n");
+void end() {
+    printf("Obrigado por utilizar nosso programa!\n");
 }
 
 void addAppointment() {
@@ -263,48 +269,93 @@ void addAppointment() {
     fclose(appointmentData);
 }
 
-int main()
-{
-	int option = 0;
+void mapAppointments() {
+    char searchDate[11];
+    char answer;
 
-	do {
-		printf("1 - Cadastrar cliente\n");
-		printf("2 - Alterar dados de cliente\n");
-		printf("3 - Marcar consulta\n");
-		printf("4 - Desmarcar a consulta\n");
-		printf("5 - Escrever mapa de horarios para um determinado dia\n");
-		printf("6 - Obter consultas\n");
-		printf("7 - Consultar maiores de 50\n");
-		printf("8 - Fim\n\n");
-		
-		printf("Escolhar uma opcao (1 - 8): ");
-		scanf("%d", &option);
+    FILE *appointmentData;
+    typeAppointment appointment;
 
-		system("cls");
-	} while(option < 1 || option > 8);
-	
-	switch(option)
-	{
-		case 1:
-			addClient();
-			break;
-		case 2:
-			updateClient();
-			break;
-		case 3:
-            addAppointment();
-			break;
-		case 4:
-			removeAppointment();
-			break;
-		case 5:
-			break;
-		case 6:
-			break;
-		case 7:
-			break;
-		case 8:
-			end();
-			break;
-	}
+    if (!(appointmentData = fopen("appointments.dat", "rb"))) {
+        printf("Houve um erro ao tentar abrir o arquivo de consultas.\n");
+        return;
+    }
+    do {
+        printf("\n\nESCREVER MAPA DE HORARIOS PARA UM DETERMINADO DIA\n");
+        printf("Digite a data (DD/MM/YYYY) para a qual deseja ver o mapa: ");
+        scanf("%s", searchDate);
+
+        printf("\nConsultas agendadas para %s:\n", searchDate);
+
+        while (fread(&appointment, sizeof(typeAppointment), 1, appointmentData)) {
+            if (appointment.isScheduled && strcmp(appointment.date, searchDate) == 0) {
+                printf("Codigo do cliente: %d\n", appointment.clientCode);
+                printf("Data: %s\n", appointment.date);
+                printf("Hora: %s\n\n", appointment.time);
+            }
+        }
+
+        fclose(appointmentData);
+
+        printf("\nDeseja pesquisar o mapa de horarios para outro dia (S/N)? ");
+        do {
+            answer = toupper(getch());
+        } while (answer != 'S' && answer != 'N');
+    } while (answer == 'S');
+
+}
+
+int main() {
+    int option = 0;
+    char menuAnswer;
+    do {
+        do {
+            printf("1 - Cadastrar cliente\n");
+            printf("2 - Alterar dados de cliente\n");
+            printf("3 - Marcar consulta\n");
+            printf("4 - Desmarcar a consulta\n");
+            printf("5 - Escrever mapa de horarios para um determinado dia\n");
+            printf("6 - Obter consultas\n");
+            printf("7 - Consultar maiores de 50\n");
+            printf("8 - Fim\n\n");
+
+            printf("Escolhar uma opcao (1 - 8): ");
+            scanf("%d", &option);
+
+            system("cls");
+        } while (option < 1 || option > 8);
+
+        switch (option) {
+            case 1:
+                addClient();
+                break;
+            case 2:
+                updateClient();
+                break;
+            case 3:
+                addAppointment();
+                break;
+            case 4:
+                removeAppointment();
+                break;
+            case 5:
+                mapAppointments();
+                break;
+            case 6:
+                break;
+            case 7:
+                break;
+            case 8:
+                end();
+                break;
+        }
+
+        printf("\n\nDeseja voltar ao menu principal (S/N)? ");
+        
+        do {
+            menuAnswer = toupper(getch());
+        } while (menuAnswer != 'S' && menuAnswer != 'N');
+
+    } while (menuAnswer == 'S');
+
 }
