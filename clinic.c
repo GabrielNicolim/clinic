@@ -17,14 +17,14 @@ typedef struct {
     char clientName[20];
     int clientAge;
     typeAddress clientAddress;
-    char clientExists;
+    int clientExists;
 } typeClient;
 
 typedef struct {
     int clientCode;
     char date[11];
     char time[6];
-    char isScheduled;
+    int isScheduled;
 } typeAppointment;
 
 void addClient();
@@ -75,6 +75,7 @@ void addClient() {
         printf("Estado: ");
         gets(client.clientAddress.state);
 
+		client.clientAddress;
 
         fwrite(&client, sizeof(typeClient), 1, clientData);
 
@@ -158,63 +159,72 @@ void updateClient() {
 
 
 void removeAppointment() {
-    typeClient client;
+	typeClient client;
+    int searchCode;
     char answer;
-    int searchCode, clientFlag, appointmentFlag;
 
     FILE *clientData;
 
-    if (!(clientData = fopen("clientes.dat", "a+b"))) {
-        printf("Houve um erro na abertura do arquivo.");
-
+    if (!(clientData = fopen("clientes.dat", "rb+"))) {
+        printf("Houve um erro na abertura do arquivo de clientes.");
         return;
     }
 
     do {
         printf("\nDESMARCAR CONSULTA\n");
         printf("Digite o codigo do cliente a ser buscado: ");
-        scanf("%d", searchCode);
+        scanf("%d", &searchCode);
+
+        int clientFound = 0;
 
         while (fread(&client, sizeof(typeClient), 1, clientData)) {
             if (client.clientExists && client.clientCode == searchCode) {
-                clientFlag = 1;
+                clientFound = 1;
 
                 typeAppointment appointment;
 
                 FILE *appointmentData;
 
-                if (!(appointmentData = fopen("consultas.dat", "a+b"))) {
-                    printf("Houve um erro na abertura do arquivo.");
-
+                if (!(appointmentData = fopen("consultas.dat", "rb+"))) {
+                    printf("Houve um erro na abertura do arquivo de consultas.");
+                    fclose(clientData);
                     return;
                 }
 
+                int found = 0;
                 while (fread(&appointment, sizeof(typeAppointment), 1, appointmentData)) {
                     if (appointment.isScheduled && appointment.clientCode == searchCode) {
-                        appointmentFlag = 1;
+                        found = 1;
+                        appointment.isScheduled = 0;
+                        fseek(appointmentData, -sizeof(typeAppointment), SEEK_CUR);
+                        fwrite(&appointment, sizeof(typeAppointment), 1, appointmentData);
+                        
+                        printf("\nConsulta removida.\n");
 
-                        // Alterar campo isScheduled
+                        break;
                     }
+                }
 
-                    break;
+                fclose(appointmentData);
+
+                if (!found) {
+                    printf("\nO paciente nao tem consultas ativas.\n");
                 }
             }
         }
 
-        if (!clientFlag) {
-            printf("\nO paciente buscado nao foi encontrado no banco de dados.\n");
+        if (!clientFound) {
+            printf("\nO paciente buscado nao foi encontrado no banco de dados de clientes.\n");
         }
 
-        if (!appointmentFlag) {
-            printf("\nO paciente nao tem consultas ativas.\n");
-        }
-
-        printf("\n Deseja remover outra consulta (S/N)? ");
+        printf("\nDeseja remover outra consulta (S/N)? ");
 
         do {
             answer = toupper(getch());
         } while (answer != 'S' && answer != 'N');
     } while (answer == 'S');
+
+    fclose(clientData);
 }
 
 void end() {
@@ -223,12 +233,11 @@ void end() {
 
 void addAppointment() {
     typeAppointment appointment;
-    typeAppointment existingAppointment;
     char answer;
 
     FILE *appointmentData;
 
-    if (!(appointmentData = fopen("appointments.dat", "a+b"))) {
+    if (!(appointmentData = fopen("consultas.dat", "a+b"))) {
         printf("Houve um erro ao tentar abrir o arquivo de consultas.\n");
         return;
     }
@@ -242,8 +251,8 @@ void addAppointment() {
         fflush(stdin);
 
         fseek(appointmentData, 0, SEEK_SET);
-        while (fread(&existingAppointment, sizeof(typeAppointment), 1, appointmentData) == 1) {
-            if (existingAppointment.clientCode == appointment.clientCode) {
+        while (fread(&appointment, sizeof(typeAppointment), 1, appointmentData) == 1) {
+            if (appointment.isScheduled && appointment.clientCode == appointment.clientCode) {
                 printf("Esse cliente ja possui uma consulta marcada.\n");
                 clientCodeExists = 1;
                 break;
@@ -357,5 +366,5 @@ int main() {
         } while (menuAnswer != 'S' && menuAnswer != 'N');
 
     } while (menuAnswer == 'S');
-
 }
+
