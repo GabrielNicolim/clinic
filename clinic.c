@@ -47,7 +47,7 @@ void addClient() {
     }
 
     do {
-        printf("\nCADASTRO DE CLIENTE\n");
+        printf("CADASTRO DE CLIENTE\n");
 
         client.clientExists = 1;
 
@@ -83,6 +83,8 @@ void addClient() {
         do {
             answer = toupper(getch());
         } while (answer != 'S' && answer != 'N');
+        
+        system("cls");
     } while (answer == 'S');
 
     fclose(clientData);
@@ -95,21 +97,19 @@ void updateClient() {
 
     FILE *clientData;
 
-    if (!(clientData = fopen("clientFile.dat", "rb"))) {
+    if (!(clientData = fopen("clientes.dat", "rb"))) {
         printf("Houve um erro na abertura do arquivo.");
 
         return;
     }
 
     do {
-
-        printf("\nCONSULTA DE PACIENTES PARA ATUALIZACAO\n");
+        printf("CONSULTA DE PACIENTES PARA ATUALIZACAO\n");
         printf("Digite o nome do cliente a ser buscado: ");
         scanf("%s", searchName);
 
         while (fread(&client, sizeof(typeClient), 1, clientData)) {
             if (client.clientExists && strcmp(client.clientName, searchName) == 0) {
-
                 printf("\nDADOS ATUAIS DO PACIENTE BUSCADO\n");
 
                 printf("Codigo: %d\n", client.clientCode);
@@ -151,10 +151,15 @@ void updateClient() {
         }
 
         printf("\n Deseja adicionar outro cliente (S/N)? ");
+
         do {
             answer = toupper(getch());
         } while (answer != 'S' && answer != 'N');
+        
+        system("cls");
     } while (answer == 'S');
+    
+    fclose(clientData);
 }
 
 
@@ -171,7 +176,7 @@ void removeAppointment() {
     }
 
     do {
-        printf("\nDESMARCAR CONSULTA\n");
+        printf("DESMARCAR CONSULTA\n");
         printf("Digite o codigo do cliente a ser buscado: ");
         scanf("%d", &searchCode);
 
@@ -222,6 +227,8 @@ void removeAppointment() {
         do {
             answer = toupper(getch());
         } while (answer != 'S' && answer != 'N');
+        
+        system("cls");
     } while (answer == 'S');
 
     fclose(clientData);
@@ -273,6 +280,8 @@ void addAppointment() {
         do {
             answer = toupper(getch());
         } while (answer != 'S' && answer != 'N');
+        
+        system("cls");
     } while (answer == 'S');
 
     fclose(appointmentData);
@@ -290,7 +299,7 @@ void mapAppointments() {
         return;
     }
     do {
-        printf("\n\nESCREVER MAPA DE HORARIOS PARA UM DETERMINADO DIA\n");
+        printf("ESCREVER MAPA DE HORARIOS PARA UM DETERMINADO DIA\n");
         printf("Digite a data (DD/MM/YYYY) para a qual deseja ver o mapa: ");
         scanf("%s", searchDate);
 
@@ -307,64 +316,72 @@ void mapAppointments() {
         fclose(appointmentData);
 
         printf("\nDeseja pesquisar o mapa de horarios para outro dia (S/N)? ");
+
         do {
             answer = toupper(getch());
         } while (answer != 'S' && answer != 'N');
+        
+        system("cls");
     } while (answer == 'S');
+}
 
+int menu()
+{
+	system("cls");
+
+    int option = 0;
+
+	do {
+        printf("1 - Cadastrar cliente\n");
+        printf("2 - Alterar dados de cliente\n");
+        printf("3 - Marcar consulta\n");
+        printf("4 - Desmarcar a consulta\n");
+        printf("5 - Escrever mapa de horarios para um determinado dia\n");
+        printf("6 - Obter consultas\n");
+        printf("7 - Consultar maiores de 50\n");
+        printf("8 - Fim\n\n");
+
+        printf("Escolhar uma opcao (1 - 8): ");
+        scanf("%d", &option);
+
+        system("cls");
+    } while (option < 1 || option > 8);
+
+     switch (option) {
+        case 1:
+            addClient();
+            break;
+        case 2:
+            updateClient();
+            break;
+        case 3:
+            addAppointment();
+            break;
+        case 4:
+            removeAppointment();
+            break;
+        case 5:
+            mapAppointments();
+            break;
+        case 6:
+        	// Error
+            break;
+        case 7:
+        	// Error
+            break;
+        case 8:
+            end();
+            break;
+    }
+    
+    return option;
 }
 
 int main() {
-    int option = 0;
-    char menuAnswer;
+	int option = 0;
+
     do {
-        do {
-            printf("1 - Cadastrar cliente\n");
-            printf("2 - Alterar dados de cliente\n");
-            printf("3 - Marcar consulta\n");
-            printf("4 - Desmarcar a consulta\n");
-            printf("5 - Escrever mapa de horarios para um determinado dia\n");
-            printf("6 - Obter consultas\n");
-            printf("7 - Consultar maiores de 50\n");
-            printf("8 - Fim\n\n");
-
-            printf("Escolhar uma opcao (1 - 8): ");
-            scanf("%d", &option);
-
-            system("cls");
-        } while (option < 1 || option > 8);
-
-        switch (option) {
-            case 1:
-                addClient();
-                break;
-            case 2:
-                updateClient();
-                break;
-            case 3:
-                addAppointment();
-                break;
-            case 4:
-                removeAppointment();
-                break;
-            case 5:
-                mapAppointments();
-                break;
-            case 6:
-                break;
-            case 7:
-                break;
-            case 8:
-                end();
-                break;
-        }
-
-        printf("\n\nDeseja voltar ao menu principal (S/N)? ");
-        
-        do {
-            menuAnswer = toupper(getch());
-        } while (menuAnswer != 'S' && menuAnswer != 'N');
-
-    } while (menuAnswer == 'S');
+		option = menu();
+    } while (option != 8);
 }
 
