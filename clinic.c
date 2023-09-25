@@ -8,13 +8,13 @@
 #endif
 
 typedef struct {
-    char city[20], state[2], street[30];
+    char city[32], state[8], street[32];
     int houseNumber;
 } typeAddress;
 
 typedef struct {
     int clientCode;
-    char clientName[20];
+    char clientName[32];
     int clientAge;
     typeAddress clientAddress;
     int clientExists;
@@ -22,8 +22,8 @@ typedef struct {
 
 typedef struct {
     int clientCode;
-    char date[11];
-    char time[6];
+    char date[16];
+    char time[8];
     int isScheduled;
 } typeAppointment;
 
@@ -129,7 +129,6 @@ void updateClient() {
                 scanf("%d", &client.clientAge);
                 fflush(stdin);
 
-                printf("Endereco completo:\n");
                 printf("Rua: ");
                 gets(client.clientAddress.street);
                 printf("Numero da casa: ");
