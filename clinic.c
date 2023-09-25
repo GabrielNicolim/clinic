@@ -29,9 +29,10 @@ typedef struct {
 
 void addClient();
 void updateClient();
-void removeAppointment();
 void addAppointment();
+void removeAppointment();
 void mapAppointments();
+void getAppointments();
 void end();
 
 void addClient() {
@@ -165,6 +166,56 @@ void updateClient() {
     fclose(clientData);
 }
 
+void addAppointment() {
+    typeAppointment appointment;
+    char answer;
+
+    FILE *appointmentData;
+
+    if (!(appointmentData = fopen("consultas.dat", "a+b"))) {
+        printf("Houve um erro ao tentar abrir o arquivo de consultas.\n");
+        return;
+    }
+
+    do {
+        int clientCodeExists = 0;
+        appointment.isScheduled = 1;
+
+        printf("Codigo do cliente: ");
+        scanf("%d", &appointment.clientCode);
+        fflush(stdin);
+
+        fseek(appointmentData, 0, SEEK_SET);
+        while (fread(&appointment, sizeof(typeAppointment), 1, appointmentData) == 1) {
+            if (appointment.isScheduled) {
+                printf("Esse cliente ja possui uma consulta marcada.\n");
+                clientCodeExists = 1;
+                break;
+            }
+        }
+        if (!clientCodeExists) {
+            printf("Data da consulta (DD/MM/YYYY): ");
+            scanf("%s", appointment.date);
+
+            printf("Hora da consulta (HH:MM): ");
+            scanf("%s", appointment.time);
+
+            appointment.isScheduled = 1;
+
+            fwrite(&appointment, sizeof(typeAppointment), 1, appointmentData);
+        }
+
+        printf("\nDeseja adicionar outra consulta (S/N)? ");
+        do {
+            answer = toupper(getch());
+        } while (answer != 'S' && answer != 'N');
+
+        system("cls");
+    } while (answer == 'S');
+
+    fclose(appointmentData);
+}
+
 void removeAppointment() {
 	typeClient client;
     int searchCode;
@@ -231,65 +282,11 @@ void removeAppointment() {
         do {
             answer = toupper(getch());
         } while (answer != 'S' && answer != 'N');
-        
+
         system("cls");
     } while (answer == 'S');
 
     fclose(clientData);
-}
-
-void end() {
-    printf("Obrigado por utilizar nosso programa!\n");
-}
-
-void addAppointment() {
-    typeAppointment appointment;
-    char answer;
-
-    FILE *appointmentData;
-
-    if (!(appointmentData = fopen("consultas.dat", "a+b"))) {
-        printf("Houve um erro ao tentar abrir o arquivo de consultas.\n");
-        return;
-    }
-
-    do {
-        int clientCodeExists = 0;
-        appointment.isScheduled = 1;
-
-        printf("Codigo do cliente: ");
-        scanf("%d", &appointment.clientCode);
-        fflush(stdin);
-
-        fseek(appointmentData, 0, SEEK_SET);
-        while (fread(&appointment, sizeof(typeAppointment), 1, appointmentData) == 1) {
-            if (appointment.isScheduled) {
-                printf("Esse cliente ja possui uma consulta marcada.\n");
-                clientCodeExists = 1;
-                break;
-            }
-        }
-        if (!clientCodeExists) {
-            printf("Data da consulta (DD/MM/YYYY): ");
-            scanf("%s", appointment.date);
-
-            printf("Hora da consulta (HH:MM): ");
-            scanf("%s", appointment.time);
-
-            appointment.isScheduled = 1;
-
-            fwrite(&appointment, sizeof(typeAppointment), 1, appointmentData);
-        }
-
-        printf("\nDeseja adicionar outra consulta (S/N)? ");
-        do {
-            answer = toupper(getch());
-        } while (answer != 'S' && answer != 'N');
-        
-        system("cls");
-    } while (answer == 'S');
-
-    fclose(appointmentData);
 }
 
 void mapAppointments() {
@@ -326,13 +323,12 @@ void mapAppointments() {
         do {
             answer = toupper(getch());
         } while (answer != 'S' && answer != 'N');
-        
+
         system("cls");
     } while (answer == 'S');
 
     fclose(appointmentData);
 }
-
 
 void getAppointments() {
     int searchCode;
@@ -449,11 +445,14 @@ int menu() {
     return option;
 }
 
+void end() {
+    printf("Obrigado por utilizar nosso programa!\n");
+}
+
 int main() {
-	int option = 0;
+	int option;
 
     do {
 		option = menu();
     } while (option != 8);
 }
-
