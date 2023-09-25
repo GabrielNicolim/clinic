@@ -103,7 +103,7 @@ void updateClient() {
 
     do {
         printf("CONSULTA DE PACIENTES PARA ATUALIZACAO\n");
-        printf("Digite o nome do cliente a ser buscado: ");
+        printf("Digite o codigo do cliente a ser buscado: ");
         scanf("%d", &searchCode);
 
         while (fread(&client, sizeof(typeClient), 1, clientData)) {
@@ -159,13 +159,12 @@ void updateClient() {
         do {
             answer = toupper(getch());
         } while (answer != 'S' && answer != 'N');
-        
+
         system("cls");
     } while (answer == 'S');
 
     fclose(clientData);
 }
-
 
 void removeAppointment() {
 	typeClient client;
@@ -264,7 +263,7 @@ void addAppointment() {
 
         fseek(appointmentData, 0, SEEK_SET);
         while (fread(&appointment, sizeof(typeAppointment), 1, appointmentData) == 1) {
-            if (appointment.isScheduled && appointment.clientCode == appointment.clientCode) {
+            if (appointment.isScheduled) {
                 printf("Esse cliente ja possui uma consulta marcada.\n");
                 clientCodeExists = 1;
                 break;
