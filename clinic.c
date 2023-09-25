@@ -90,7 +90,7 @@ void addClient() {
 
 void updateClient() {
     typeClient client;
-    char searchName[30], answer;
+    int searchCode, answer;
     int clientFlag = 0;
 
     FILE *clientData;
@@ -104,10 +104,10 @@ void updateClient() {
     do {
         printf("CONSULTA DE PACIENTES PARA ATUALIZACAO\n");
         printf("Digite o nome do cliente a ser buscado: ");
-        scanf("%s", searchName);
+        scanf("%d", &searchCode);
 
         while (fread(&client, sizeof(typeClient), 1, clientData)) {
-            if (client.clientExists && strcmp(client.clientName, searchName) == 0) {
+            if (client.clientExists && client.clientCode == searchCode) {
                 printf("\nDADOS ATUAIS DO PACIENTE BUSCADO\n");
 
                 printf("Codigo: %d\n", client.clientCode);
