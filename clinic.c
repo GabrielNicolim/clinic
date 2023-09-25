@@ -95,9 +95,8 @@ void updateClient() {
 
     FILE *clientData;
 
-    if (!(clientData = fopen("clientes.dat", "rb"))) {
+    if (!(clientData = fopen("clientes.dat", "rb+"))) {
         printf("Houve um erro na abertura do arquivo.");
-
         return;
     }
 
@@ -118,8 +117,6 @@ void updateClient() {
 
                 printf("\nATUALIZACAO DO CADASTRO DO PACIENTE\n");
 
-                printf("Codigo: ");
-                scanf("%d", &client.clientCode);
                 fflush(stdin);
 
                 printf("Nome: ");
@@ -131,11 +128,14 @@ void updateClient() {
 
                 printf("Rua: ");
                 gets(client.clientAddress.street);
+
                 printf("Numero da casa: ");
                 scanf("%d", &client.clientAddress.houseNumber);
                 fflush(stdin);
+
                 printf("Cidade: ");
                 gets(client.clientAddress.city);
+
                 printf("Estado (XX): ");
                 gets(client.clientAddress.state);
 
