@@ -205,9 +205,10 @@ void removeAppointment() {
                         appointment.isScheduled = 0;
                         fseek(appointmentData, -sizeof(typeAppointment), SEEK_CUR);
                         fwrite(&appointment, sizeof(typeAppointment), 1, appointmentData);
-                        
-                        printf("\nConsulta removida.\n");
 
+                        appointment.isScheduled = 0;
+
+                        printf("\nConsulta removida.\n");
                         break;
                     }
                 }
@@ -275,6 +276,8 @@ void addAppointment() {
             printf("Hora da consulta (HH:MM): ");
             scanf("%s", appointment.time);
 
+            appointment.isScheduled = 1;
+
             fwrite(&appointment, sizeof(typeAppointment), 1, appointmentData);
         }
 
@@ -296,19 +299,20 @@ void mapAppointments() {
     FILE *appointmentData;
     typeAppointment appointment;
 
-    if (!(appointmentData = fopen("appointments.dat", "rb"))) {
+    if (!(appointmentData = fopen("consultas.dat", "rb"))) {
         printf("Houve um erro ao tentar abrir o arquivo de consultas.\n");
         return;
     }
+
     do {
         printf("ESCREVER MAPA DE HORARIOS PARA UM DETERMINADO DIA\n");
         printf("Digite a data (DD/MM/YYYY) para a qual deseja ver o mapa: ");
-        scanf("%s", searchDate);
+        scanf("%10s", searchDate);
 
         printf("\nConsultas agendadas para %s:\n", searchDate);
 
         while (fread(&appointment, sizeof(typeAppointment), 1, appointmentData)) {
-            if (appointment.isScheduled && strcmp(appointment.date, searchDate) == 0) {
+            if (appointment.isScheduled && strncmp(appointment.date, searchDate, 10) == 0) {
                 printf("Codigo do cliente: %d\n", appointment.clientCode);
                 printf("Data: %s\n", appointment.date);
                 printf("Hora: %s\n\n", appointment.time);
@@ -369,7 +373,7 @@ void getAppointments() {
                 fseek(appointmentData, 0, SEEK_SET);
 
                 while (fread(&appointment, sizeof(typeAppointment), 1, appointmentData)) {
-                    if (appointment.clientCode == searchCode) {
+                    if (appointment.clientCode == searchCode && appointment.isScheduled == 1) {
                         printf("\nConsulta %d\n", index);
                         printf("Data: %s %s\n", appointment.date, appointment.time);
                         index++;
@@ -396,13 +400,11 @@ void getAppointments() {
     fclose(appointmentData);
 }
 
-int menu()
-{
-	system("cls");
-
+int menu() {
+    system("cls");
     int option = 0;
 
-	do {
+    do {
         printf("1 - Cadastrar cliente\n");
         printf("2 - Alterar dados de cliente\n");
         printf("3 - Marcar consulta\n");
@@ -412,39 +414,38 @@ int menu()
         printf("7 - Consultar maiores de 50\n");
         printf("8 - Fim\n\n");
 
-        printf("Escolhar uma opcao (1 - 8): ");
+        printf("Escolha uma opcao (1 - 8): ");
         scanf("%d", &option);
 
         system("cls");
+
+        switch (option) {
+            case 1:
+                addClient();
+                break;
+            case 2:
+                updateClient();
+                break;
+            case 3:
+                addAppointment();
+                break;
+            case 4:
+                removeAppointment();
+                break;
+            case 5:
+                mapAppointments();
+                break;
+            case 6:
+                getAppointments();
+                break;
+            case 7:
+                break;
+            case 8:
+                end();
+                break;
+        }
     } while (option < 1 || option > 8);
 
-     switch (option) {
-        case 1:
-            addClient();
-            break;
-        case 2:
-            updateClient();
-            break;
-        case 3:
-            addAppointment();
-            break;
-        case 4:
-            removeAppointment();
-            break;
-        case 5:
-            mapAppointments();
-            break;
-        case 6:
-        	getAppointments();
-            break;
-        case 7:
-        	// Error
-            break;
-        case 8:
-            end();
-            break;
-    }
-    
     return option;
 }
 
