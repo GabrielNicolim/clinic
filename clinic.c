@@ -15,6 +15,7 @@ typedef struct {
 typedef struct {
     int clientCode;
     char clientName[32];
+    char clientPhone[16];
     int clientAge;
     typeAddress clientAddress;
     int clientExists;
@@ -34,6 +35,7 @@ void removeAppointment();
 void mapAppointments();
 void getAppointments();
 void end();
+void listPatientsLastAppointmentOverSixMonths();
 
 void addClient() {
     typeClient client;
@@ -58,6 +60,9 @@ void addClient() {
 
         printf("Nome: ");
         gets(client.clientName);
+
+        printf("Telefone: ");
+        gets(client.clientPhone);
 
         printf("Idade: ");
         scanf("%d", &client.clientAge);
@@ -122,6 +127,9 @@ void updateClient() {
 
                 printf("Nome: ");
                 gets(client.clientName);
+
+                printf("Telefone: ");
+                gets(client.clientPhone);
 
                 printf("Idade: ");
                 scanf("%d", &client.clientAge);
@@ -396,6 +404,73 @@ void getAppointments() {
     fclose(appointmentData);
 }
 
+int isDateOverSixMonthsAgo(const char* date, const char* referenceDate) {
+    int day1, month1, year1;
+    int day2, month2, year2;
+
+    sscanf(date, "%d/%d/%d", &day1, &month1, &year1);
+    sscanf(referenceDate, "%d/%d/%d", &day2, &month2, &year2);
+
+    int date1 = year1 * 12 + month1;
+    int date2 = year2 * 12 + month2;
+
+    return (date2 - date1) > 6;
+}
+
+void listPatientsLastAppointmentOverSixMonths() {
+    typeClient client;
+    typeAppointment appointment;
+
+    FILE *clientData;
+    FILE *appointmentData;
+
+    if (!(clientData = fopen("clientes.dat", "rb"))) {
+        printf("Houve um erro na abertura do arquivo de clientes.\n");
+        return;
+    }
+
+    if (!(appointmentData = fopen("consultas.dat", "rb"))) {
+        printf("Houve um erro na abertura do arquivo de consultas.\n");
+        fclose(clientData);
+        return;
+    }
+
+    char currentDate[11];
+    printf("Digite a data atual (DD/MM/YYYY): ");
+    scanf("%10s", currentDate);
+
+    char answer;
+
+    do {
+        while (fread(&appointment, sizeof(typeAppointment), 1, appointmentData)) {
+            if (appointment.isScheduled) {
+                if (isDateOverSixMonthsAgo(appointment.date, currentDate)) {
+                    fseek(clientData, 0, SEEK_SET);
+                    while (fread(&client, sizeof(typeClient), 1, clientData)) {
+                        if (client.clientExists && client.clientCode == appointment.clientCode &&
+                            client.clientAge > 50) {
+                            printf("Nome: %s\n", client.clientName);
+                            printf("Telefone: %s\n\n", client.clientPhone);
+                        }
+                    }
+                }
+            }
+        }
+
+        rewind(appointmentData);
+
+        printf("\nDeseja listar outros pacientes (S/N)? ");
+        do {
+            answer = toupper(getch());
+        } while (answer != 'S' && answer != 'N');
+
+        system("cls");
+    } while (answer == 'S');
+
+    fclose(clientData);
+    fclose(appointmentData);
+}
+
 int menu() {
     system("cls");
     int option = 0;
@@ -435,6 +510,7 @@ int menu() {
                 getAppointments();
                 break;
             case 7:
+                listPatientsLastAppointmentOverSixMonths();
                 break;
             case 8:
                 end();
