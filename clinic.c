@@ -1,3 +1,5 @@
+// TRABALHO DE ALGORITMOS II (Gabriel Nicolim - 231021909, Otávio Campezzi - 231021259, Yasmin Sobrinho - 231020031)
+
 #include <stdio.h>
 
 #ifdef _WIN32
