@@ -18,7 +18,7 @@ typedef struct {
     char clientPhone[16];
     int clientAge;
     typeAddress clientAddress;
-    int clientExists;
+    int pacientexists;
 } typeClient;
 
 typedef struct {
@@ -50,31 +50,24 @@ void addClient() {
     }
 
     do {
-        printf("CADASTRO DE CLIENTE");
+        printf("CADASTRO DE PACIENTE");
 
-        client.clientExists = 1;
+        client.pacientexists = 1;
 
-		FILE *clients;
-
-	   	if (!(clients = fopen("clientes.dat", "rb+"))) {
-	        printf("Houve um erro na abertura do arquivo.");
-	        return;
-	    }
-
-		int codeExists = 0;
+		int codeExists;
 		do {
 			codeExists = 0;
 
 			printf("\nCodigo: ");
         	scanf("%d", &client.clientCode);
 
-        	rewind(clients);
+        	rewind(clientData);
         	
-        	while (fread(&auxClient, sizeof(typeClient), 1, clients) == 1) {
+        	while (fread(&auxClient, sizeof(typeClient), 1, clientData) == 1) {
 	            if(client.clientCode == auxClient.clientCode) {
 	            	codeExists = 1;
 
-					printf("\nCodigo do cliente ja existe\n");
+					printf("\nSelecione outro codigo, um outro paciente ja foi cadastrado com esse codigo.\n");
 
 					break;
 				}
@@ -90,14 +83,14 @@ void addClient() {
         gets(client.clientPhone);
 
         printf("Idade: ");
-        scanf("%d", &client.clientAge);
+        scanf("%2d", &client.clientAge);
         fflush(stdin);
 
         printf("Rua: ");
         gets(client.clientAddress.street);
 
         printf("Numero da casa: ");
-        scanf("%d", &client.clientAddress.houseNumber);
+        scanf("%5d", &client.clientAddress.houseNumber);
         fflush(stdin);
 
         printf("Cidade: ");
@@ -108,7 +101,7 @@ void addClient() {
 
         fwrite(&client, sizeof(typeClient), 1, clientData);
 
-        printf("\nDeseja adicionar outro cliente (S/N)? ");
+        printf("\nDeseja adicionar outro paciente (S/N)? ");
         do {
             answer = toupper(getch());
         } while (answer != 'S' && answer != 'N');
@@ -133,11 +126,11 @@ void updateClient() {
 
     do {
         printf("CONSULTA DE PACIENTES PARA ATUALIZACAO\n");
-        printf("Digite o codigo do cliente a ser buscado: ");
+        printf("Digite o codigo do paciente a ser buscado: ");
         scanf("%d", &searchCode);
 
         while (fread(&client, sizeof(typeClient), 1, clientData)) {
-            if (client.clientExists && client.clientCode == searchCode) {
+            if (client.pacientexists && client.clientCode == searchCode) {
                 printf("\nDADOS ATUAIS DO PACIENTE BUSCADO\n");
 
                 printf("Codigo: %d\n", client.clientCode);
@@ -157,14 +150,14 @@ void updateClient() {
                 gets(client.clientPhone);
 
                 printf("Idade: ");
-                scanf("%d", &client.clientAge);
+                scanf("%2d", &client.clientAge);
                 fflush(stdin);
 
                 printf("Rua: ");
                 gets(client.clientAddress.street);
 
                 printf("Numero da casa: ");
-                scanf("%d", &client.clientAddress.houseNumber);
+                scanf("%5d", &client.clientAddress.houseNumber);
                 fflush(stdin);
 
                 printf("Cidade: ");
@@ -188,7 +181,7 @@ void updateClient() {
 
         rewind(clientData);
 
-        printf("\n Deseja alterar os dados de outro cliente (S/N)? ");
+        printf("\n Deseja alterar os dados de outro paciente (S/N)? ");
         do {
             answer = toupper(getch());
         } while (answer != 'S' && answer != 'N');
@@ -214,24 +207,24 @@ void addAppointment() {
         int clientCodeExists = 0;
         appointment.isScheduled = 1;
 
-        printf("Codigo do cliente: ");
+        printf("Codigo do paciente: ");
         scanf("%d", &appointment.clientCode);
         fflush(stdin);
 
         fseek(appointmentData, 0, SEEK_SET);
         while (fread(&appointment, sizeof(typeAppointment), 1, appointmentData) == 1) {
             if (appointment.isScheduled) {
-                printf("Esse cliente ja possui uma consulta marcada.\n");
+                printf("Esse paciente ja possui uma consulta marcada.\n");
                 clientCodeExists = 1;
                 break;
             }
         }
         if (!clientCodeExists) {
             printf("Data da consulta (DD/MM/YYYY): ");
-            scanf("%s", appointment.date);
+            scanf("%10s", appointment.date);
 
             printf("Hora da consulta (HH:MM): ");
-            scanf("%s", appointment.time);
+            scanf("%5s", appointment.time);
 
             appointment.isScheduled = 1;
 
@@ -257,19 +250,19 @@ void removeAppointment() {
     FILE *clientData;
 
     if (!(clientData = fopen("clientes.dat", "rb+"))) {
-        printf("Houve um erro na abertura do arquivo de clientes.");
+        printf("Houve um erro na abertura do arquivo de pacientes.");
         return;
     }
 
     do {
         printf("DESMARCAR CONSULTA\n");
-        printf("Digite o codigo do cliente a ser buscado: ");
+        printf("Digite o codigo do paciente a ser buscado: ");
         scanf("%d", &searchCode);
 
         int clientFound = 0;
 
         while (fread(&client, sizeof(typeClient), 1, clientData)) {
-            if (client.clientExists && client.clientCode == searchCode) {
+            if (client.pacientexists && client.clientCode == searchCode) {
                 clientFound = 1;
 
                 typeAppointment appointment;
@@ -292,7 +285,7 @@ void removeAppointment() {
 
                         appointment.isScheduled = 0;
 
-                        printf("\nConsulta removida.\n");
+                        printf("\nConsulta desmarcada com sucesso.\n");
                         break;
                     }
                 }
@@ -306,7 +299,7 @@ void removeAppointment() {
         }
 
         if (!clientFound) {
-            printf("\nO paciente buscado nao foi encontrado no banco de dados de clientes.\n");
+            printf("\nO paciente buscado nao foi encontrado no banco de dados de pacientes.\n");
         }
 
         rewind(clientData);
@@ -343,7 +336,7 @@ void mapAppointments() {
 
         while (fread(&appointment, sizeof(typeAppointment), 1, appointmentData)) {
             if (appointment.isScheduled && strncmp(appointment.date, searchDate, 10) == 0) {
-                printf("Codigo do cliente: %d\n", appointment.clientCode);
+                printf("Codigo do paciente: %d\n", appointment.clientCode);
                 printf("Data: %s\n", appointment.date);
                 printf("Hora: %s\n\n", appointment.time);
             }
@@ -371,7 +364,7 @@ void getAppointments() {
     FILE *appointmentData;
 
     if (!(clientData = fopen("clientes.dat", "rb"))) {
-        printf("Houve um erro na abertura do arquivo de clientes.\n");
+        printf("Houve um erro na abertura do arquivo de pacientes.\n");
         return;
     }
 
@@ -383,7 +376,7 @@ void getAppointments() {
 
     do {
         printf("\nOBTER CONSULTAS\n");
-        printf("Digite o codigo do cliente a ser buscado: ");
+        printf("Digite o codigo do paciente a ser buscado: ");
         scanf("%d", &searchCode);
 
         int clientFound = 0;
@@ -392,13 +385,14 @@ void getAppointments() {
         int index = 1;
 
         while (fread(&client, sizeof(typeClient), 1, clientData)) {
-            if (client.clientExists && client.clientCode == searchCode) {
+            if (client.pacientexists && client.clientCode == searchCode) {
                 clientFound = 1;
 
+                printf("\nPACIENTE:\n");
                 printf("\nNome: %s\n", client.clientName);
                 printf("Idade: %d\n", client.clientAge);
 
-                printf("\nConsultas\n");
+                printf("\nCONSULTAS:\n");
                 fseek(appointmentData, 0, SEEK_SET);
 
                 while (fread(&appointment, sizeof(typeAppointment), 1, appointmentData)) {
@@ -412,12 +406,12 @@ void getAppointments() {
         }
 
         if (!clientFound) {
-            printf("\nO paciente buscado nao foi encontrado no banco de dados de clientes.\n");
+            printf("\nO paciente buscado nao foi encontrado no banco de dados de pacientes.\n");
         }
 
         rewind(clientData);
 
-        printf("\nDeseja consultar outro cliente (S/N)? ");
+        printf("\nDeseja consultar outro paciente (S/N)? ");
         do {
             answer = toupper(getch());
         } while (answer != 'S' && answer != 'N');
@@ -430,16 +424,16 @@ void getAppointments() {
 }
 
 int isDateOverSixMonthsAgo(const char* date, const char* referenceDate) {
-    int day1, month1, year1;
-    int day2, month2, year2;
+    int dayOne, monthOne, yearOne;
+    int dayTwo, monthTwo, yearTwo;
 
-    sscanf(date, "%d/%d/%d", &day1, &month1, &year1);
-    sscanf(referenceDate, "%d/%d/%d", &day2, &month2, &year2);
+    sscanf(date, "%d/%d/%d", &dayOne, &monthOne, &yearOne);
+    sscanf(referenceDate, "%d/%d/%d", &dayTwo, &monthTwo, &yearTwo);
 
-    int date1 = year1 * 12 + month1;
-    int date2 = year2 * 12 + month2;
+    int dateOne = yearOne * 12 + monthOne;
+    int dateTwo = yearTwo * 12 + monthTwo;
 
-    return (date2 - date1) > 6;
+    return (dateTwo - dateOne) > 6;
 }
 
 void listPatientsLastAppointmentOverSixMonths() {
@@ -450,7 +444,7 @@ void listPatientsLastAppointmentOverSixMonths() {
     FILE *appointmentData;
 
     if (!(clientData = fopen("clientes.dat", "rb"))) {
-        printf("Houve um erro na abertura do arquivo de clientes.\n");
+        printf("Houve um erro na abertura do arquivo de pacientes.\n");
         return;
     }
 
@@ -461,7 +455,7 @@ void listPatientsLastAppointmentOverSixMonths() {
     }
 
     char currentDate[11];
-    printf("Digite a data atual (DD/MM/YYYY): ");
+    printf("Digite a data atual (DD/MM/YYYY) para verificar os pacientes que devem ser contatados: ");
     scanf("%10s", currentDate);
 
     char answer;
@@ -472,8 +466,9 @@ void listPatientsLastAppointmentOverSixMonths() {
                 if (isDateOverSixMonthsAgo(appointment.date, currentDate)) {
                     fseek(clientData, 0, SEEK_SET);
                     while (fread(&client, sizeof(typeClient), 1, clientData)) {
-                        if (client.clientExists && client.clientCode == appointment.clientCode &&
+                        if (client.pacientexists && client.clientCode == appointment.clientCode &&
                             client.clientAge > 50) {
+                            printf("ENTRAR EM CONTATO COM:\n");
                             printf("Nome: %s\n", client.clientName);
                             printf("Telefone: %s\n\n", client.clientPhone);
                         }
@@ -484,7 +479,7 @@ void listPatientsLastAppointmentOverSixMonths() {
 
         rewind(appointmentData);
 
-        printf("\nDeseja listar outros pacientes (S/N)? ");
+        printf("\nDeseja buscar por outra data (S/N)? ");
         do {
             answer = toupper(getch());
         } while (answer != 'S' && answer != 'N');
@@ -501,13 +496,13 @@ int menu() {
     int option = 0;
 
     do {
-        printf("1 - Cadastrar cliente\n");
-        printf("2 - Alterar dados de cliente\n");
+        printf("1 - Cadastrar paciente\n");
+        printf("2 - Alterar dados de paciente\n");
         printf("3 - Marcar consulta\n");
         printf("4 - Desmarcar a consulta\n");
         printf("5 - Escrever mapa de horarios para um determinado dia\n");
         printf("6 - Obter consultas\n");
-        printf("7 - Consultar maiores de 50\n");
+        printf("7 - Consultar maiores de 50 sem retorno a mais de 6 meses\n");
         printf("8 - Fim\n\n");
 
         printf("Escolha uma opcao (1 - 8): ");
