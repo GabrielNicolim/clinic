@@ -74,7 +74,7 @@ void addClient() {
 	            if(client.clientCode == auxClient.clientCode) {
 	            	codeExists = 1;
 
-					printf("\nCodigo do cliente ja existe");
+					printf("\nCodigo do cliente ja existe\n");
 
 					break;
 				}
