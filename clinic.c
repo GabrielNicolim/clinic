@@ -36,7 +36,7 @@ void getAppointments();
 void end();
 
 void addClient() {
-    typeClient client;
+    typeClient client, auxClient;
     char answer;
 
     FILE *clientData;
@@ -48,12 +48,37 @@ void addClient() {
     }
 
     do {
-        printf("CADASTRO DE CLIENTE\n");
+        printf("CADASTRO DE CLIENTE");
 
         client.clientExists = 1;
 
-        printf("Codigo: ");
-        scanf("%d", &client.clientCode);
+		FILE *clients;
+
+	   	if (!(clients = fopen("clientes.dat", "rb+"))) {
+	        printf("Houve um erro na abertura do arquivo.");
+	        return;
+	    }
+
+		int codeExists = 0;
+		do {
+			codeExists = 0;
+
+			printf("\nCodigo: ");
+        	scanf("%d", &client.clientCode);
+
+        	rewind(clients);
+        	
+        	while (fread(&auxClient, sizeof(typeClient), 1, clients) == 1) {
+	            if(client.clientCode == auxClient.clientCode) {
+	            	codeExists = 1;
+
+					printf("\nCodigo do cliente ja existe");
+
+					break;
+				}
+        	}
+		} while(codeExists);
+
         fflush(stdin);
 
         printf("Nome: ");
