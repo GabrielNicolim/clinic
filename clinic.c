@@ -1,13 +1,8 @@
 // TRABALHO DE ALGORITMOS II (Gabriel Nicolim - 231021909, Otávio Campezzi - 231021259, Yasmin Sobrinho - 231020031)
 
 #include <stdio.h>
-
-#ifdef _WIN32
-
 #include <conio.h>
 #include <windows.h>
-
-#endif
 
 typedef struct {
     char city[32], state[8], street[32];
