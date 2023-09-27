@@ -20,7 +20,7 @@ typedef struct {
     char clientPhone[16];
     int clientAge;
     typeAddress clientAddress;
-    int pacientexists;
+    int clientExists;
 } typeClient;
 
 typedef struct {
@@ -54,7 +54,7 @@ void addClient() {
     do {
         printf("CADASTRO DE PACIENTE");
 
-        client.pacientexists = 1;
+        client.clientExists = 1;
 
 		int codeExists;
 		do {
@@ -132,7 +132,7 @@ void updateClient() {
         scanf("%d", &searchCode);
 
         while (fread(&client, sizeof(typeClient), 1, clientData)) {
-            if (client.pacientexists && client.clientCode == searchCode) {
+            if (client.clientExists && client.clientCode == searchCode) {
                 printf("\nDADOS ATUAIS DO PACIENTE BUSCADO\n");
 
                 printf("Codigo: %d\n", client.clientCode);
@@ -264,7 +264,7 @@ void removeAppointment() {
         int clientFound = 0;
 
         while (fread(&client, sizeof(typeClient), 1, clientData)) {
-            if (client.pacientexists && client.clientCode == searchCode) {
+            if (client.clientExists && client.clientCode == searchCode) {
                 clientFound = 1;
 
                 typeAppointment appointment;
@@ -387,7 +387,7 @@ void getAppointments() {
         int index = 1;
 
         while (fread(&client, sizeof(typeClient), 1, clientData)) {
-            if (client.pacientexists && client.clientCode == searchCode) {
+            if (client.clientExists && client.clientCode == searchCode) {
                 clientFound = 1;
 
                 printf("\nPACIENTE:\n");
@@ -468,7 +468,7 @@ void listPatientsLastAppointmentOverSixMonths() {
                 if (isDateOverSixMonthsAgo(appointment.date, currentDate)) {
                     fseek(clientData, 0, SEEK_SET);
                     while (fread(&client, sizeof(typeClient), 1, clientData)) {
-                        if (client.pacientexists && client.clientCode == appointment.clientCode &&
+                        if (client.clientExists && client.clientCode == appointment.clientCode &&
                             client.clientAge > 50) {
                             printf("ENTRAR EM CONTATO COM:\n");
                             printf("Nome: %s\n", client.clientName);
